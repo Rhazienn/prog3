@@ -24,10 +24,10 @@ class UsuariosController extends Controller
     {
         $usuario = new Usuario();
 
-        $usuario->nome = $form->nome;
+        $usuario->name = $form->name;
         $usuario->email = $form->email;
-        $usuario->usuario = $form->usuario;
-        $usuario->senha = Hash::make($form->senha);
+        $usuario->username = $form->username;
+        $usuario->password = Hash::make($form->senha);
 
         $usuario->save();
 
@@ -40,7 +40,7 @@ class UsuariosController extends Controller
         // Está enviando o formulário
         if ($form->isMethod('POST'))
         {
-            $usuario = $form->usuario;
+            $usuario = $form->username;
             $senha = $form->senha;
 
             $consulta = Usuario::select('id', 'nome', 'email', 'usuario', 'senha')->where('usuario', $usuario)->get();
