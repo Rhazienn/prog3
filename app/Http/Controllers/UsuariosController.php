@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UsuariosController extends Controller
 {
@@ -27,48 +28,48 @@ class UsuariosController extends Controller
         $usuario->name = $form->name;
         $usuario->email = $form->email;
         $usuario->username = $form->username;
-        $usuario->password = Hash::make($form->senha);
+        $usuario->password = Hash::make($form->password);
 
         $usuario->save();
 
         return redirect()->route('usuarios.index');
     }
-
     // Ações de login
     public function login(Request $form)
     {
         // Está enviando o formulário
-        if ($form->isMethod('POST'))
-        {
-            $usuario = $form->username;
-            $senha = $form->senha;
+        if ($form->isMethod('POST')) {
 
-            $consulta = Usuario::select('id', 'nome', 'email', 'usuario', 'senha')->where('usuario', $usuario)->get();
+            $credenciais = $form->validate([
+                'username' => ['required'],
+                'password' => ['required'],
+            ]);
 
-            // Confere se encontrou algum usuário
-            if ($consulta->count())
-            {
-                // Confere se a senha está correta
-                if (Hash::check($senha, $consulta[0]->senha))
-                {
-                    unset($consulta[0]->senha);
 
-                    session()->put('usuario', $consulta[0]);
+            if (Auth::attempt($credenciais)) {
 
-                    return redirect()->route('home');
-                }
+                session()->regenerate();
+                return redirect()->route('home');
+
+            } else {
+
+                // Login deu errado (usuário ou senha inválidos)
+                return redirect()->route('login')->with('erro','Usuário ou senha inválidos.');
+
             }
-
-            // Login deu errado (usuário ou senha inválidos)
-            return redirect()->route('login')->with('erro', 'Usuário ou senha inválidos.');
         }
 
         return view('usuarios.login');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->forget('usuario');
+        Auth::logout();
+
+        $request->session()->invalidate();
+    
+        $request->session()->regenerateToken();
+
         return redirect()->route('home');
     }
 }
