@@ -6,6 +6,8 @@ use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
+
 
 class UsuariosController extends Controller
 {
@@ -32,7 +34,11 @@ class UsuariosController extends Controller
 
         $usuario->save();
 
-        return redirect()->route('usuarios.index');
+        event(new Registered($usuario));
+        
+        Auth::login($usuario);
+
+        return redirect()->route('verification.notice');
     }
     // Ações de login
     public function login(Request $form)
@@ -46,11 +52,11 @@ class UsuariosController extends Controller
             ]);
 
 
-            if (Auth::attempt($credenciais)) {
+            if (Auth::attempt($credenciais,$form->remember_me)) {
 
                 session()->regenerate();
                 return redirect()->route('home');
-
+                
             } else {
 
                 // Login deu errado (usuário ou senha inválidos)
@@ -60,6 +66,10 @@ class UsuariosController extends Controller
         }
 
         return view('usuarios.login');
+    }
+
+    public function profile(){
+        
     }
 
     public function logout(Request $request)

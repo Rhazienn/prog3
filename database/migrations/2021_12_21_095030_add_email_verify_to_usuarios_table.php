@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsuariosTable extends Migration
+class AddEmailVerifyToUsuariosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,9 @@ class CreateUsuariosTable extends Migration
      */
     public function up()
     {
-        Schema::create('usuarios', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 255);
-            $table->string('email', 255);
-            $table->string('username', 255);
-            $table->string('password', 255);
-            $table->boolean('admin')->default(0);
+        Schema::table('usuarios', function (Blueprint $table) {
             $table->timestamp('email_verified_at')->nullable();
-        }); 
+        });
     }
 
     /**
@@ -31,6 +25,8 @@ class CreateUsuariosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('usuarios');
+        Schema::table('usuarios', function (Blueprint $table) {
+            $table->dropColumn('email_verified_at');
+        });
     }
 }

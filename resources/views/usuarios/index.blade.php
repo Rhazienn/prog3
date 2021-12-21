@@ -6,9 +6,6 @@
 <div class="row">
     <div class="col">
         <p>Sejam bem-vindos à página de usuários</p>
-
-        <a class="btn btn-primary" href="{{route('usuarios.inserir')}}" role="button">Cadastrar usuário</a>
-
     </div>
 </div>
 

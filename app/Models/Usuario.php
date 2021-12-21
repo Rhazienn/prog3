@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 
-class Usuario extends Model implements Authenticatable
+class Usuario extends Authenticatable implements MustVerifyEmail
 {
+    use Notifiable;
     
     protected $hidden = [
         'password',
@@ -29,15 +31,15 @@ class Usuario extends Model implements Authenticatable
     }
 
     function getRememberToken(){
-
+        return $this->remember_token;
     }
 
     function setRememberToken($value){
-
+        $this->remember_token = $value;
     }
 
     function getRememberTokenName(){
-        
+        return 'remember_token';
     }
 
     public $timestamps = false;
